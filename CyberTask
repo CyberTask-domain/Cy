@@ -173,3 +173,55 @@ select, button {
 button:hover {
   background: #33ffaa;
 }
+from flask import Flask, render_template, request
+from urllib.parse import quote
+
+def create_app():
+    app = Flask(__name__, template_folder='templates', static_folder='static')
+    app.config['SECRET_KEY'] = 'cybertask-secret-key'
+
+    # Define profiles
+    PROFILES = {
+        "Default": [
+            "https://www.google.com/search?q=",
+            "https://duckduckgo.com/?q=",
+            "https://www.bing.com/search?q="
+        ],
+        "Research": [
+            "https://scholar.google.com/scholar?q=",
+            "https://www.wikipedia.org/wiki/Special:Search?search=",
+            "https://www.bing.com/search?q="
+        ],
+        "Shopping": [
+            "https://www.amazon.com/s?k=",
+            "https://www.ebay.com/sch/i.html?_nkw=",
+            "https://www.google.com/search?q=buy+"
+        ],
+        "Coding": [
+            "https://stackoverflow.com/search?q=",
+            "https://github.com/search?q=",
+            "https://www.google.com/search?q=programming+"
+        ]
+    }
+
+    @app.route("/", methods=["GET", "POST"])
+    def index():
+        profile_names = list(PROFILES.keys())
+        selected_profile = request.form.get("profile", "Default")
+        query = request.form.get("query", "")
+        links = []
+
+        if request.method == "POST" and query.strip():
+            encoded = quote(query.strip())
+            sites = PROFILES.get(selected_profile, PROFILES["Default"])
+            links = [url + encoded for url in sites]
+
+        return render_template(
+            "index.html",
+            profiles=profile_names,
+            selected_profile=selected_profile,
+            query=query,
+            links=links
+        )
+
+    return app
