@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberTask Web</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="crt">
+  <div class="container">
+    <div class="header">
+      <h1>CYBERTASK // MULTI-SITE TERMINAL (WEB)</h1>
+      <p id="currentDateTime" class="datetime"></p>
+    </div>
+
+    <form method="POST" class="search-form">
+      <div class="form-group">
+        <label for="profile">Profile:</label>
+        <select name="profile" id="profile" required>
+          {% for p in profiles %}
+            <option value="{{ p }}" {% if p == selected_profile %}selected{% endif %}>{{ p }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <input
+          type="text"
+          name="query"
+          id="query"
+          placeholder="type your query..."
+          value="{{ query }}"
+          required
+          autocomplete="off"
+        />
+      </div>
+
+      <button type="submit" class="search-btn">SEARCH</button>
+    </form>
+
+    {% if links %}
+      <div class="results-section">
+        <h2>RESULTS:</h2>
+        <ul class="results-list">
+          {% for link in links %}
+            <li class="result-item">
+              <a href="{{ link }}" target="_blank" rel="noopener noreferrer">{{ link }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    {% if query and not links %}
+      <div class="no-results">
+        <p>No results. Please refine your search.</p>
+      </div>
+    {% endif %}
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
